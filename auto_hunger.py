@@ -84,6 +84,9 @@ if __name__ == "__main__":
             
         print(f"Finished: {finished}")
         if finished:
+            for i in range(5):
+                pd.click()
+                sleep(0.02)
             check_hunger()
 
 
