@@ -92,7 +92,7 @@ def check_for_finished():
     screenshot = cv.cvtColor(screenshot, cv.COLOR_BGR2GRAY)
 
     result = cv.matchTemplate(screenshot, template, cv.TM_CCOEFF_NORMED)
-    thresh = 0.85
+    thresh = 0.83
     loc = np.where(result >= thresh)
 
     found = False
@@ -101,9 +101,6 @@ def check_for_finished():
         found = True
 
     return found
-
-
-
 
 move_range = 100
 increment = 5
@@ -131,7 +128,6 @@ def autoclick(): #autoclicks but also moves the mouse around to account for skip
         if finished:
             break
 
-
 def main():
     global times_ran
 
@@ -145,6 +141,5 @@ def main():
 
     sleep(61)
     main()
-
 
 main()

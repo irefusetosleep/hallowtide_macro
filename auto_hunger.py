@@ -8,13 +8,10 @@ from time import sleep
 screen_size = (0, 0)
 
 for m in get_monitors():
-    if m.is_primary == True:
+    if m.is_primary == True: # if you want this to be your second monitor change "True" to "False"
         screen_size = (m.width, m.height)
 
-
 def check_hunger(): #check alt accounts hunger since it cant regain from carnivore
-    #yeah im ngl fuck allat image recognition ima just hardcode this
-
     thirst_bar_height = int((screen_size[1] * 0.199))
     thirst_bar_width = int((screen_size[0]/2) * 0.006)
     thirst_bar_region = (screen_size[0] * 0.52, screen_size[1] - thirst_bar_height)
@@ -39,6 +36,9 @@ def check_hunger(): #check alt accounts hunger since it cant regain from carnivo
     print(f"Thirst bar about: {fill_ratio * 100:.1f}% full!")
 
     if fill_ratio < 0.3:
+        if __name__ != "__main__":
+            pd.click(int(screen_size[0] * .67), int(screen_size[1] * 0.50))
+            sleep(.1)
         pd.press("1")
         sleep(1)
         pd.click()
@@ -68,7 +68,7 @@ if __name__ == "__main__":
         screenshot = cv.cvtColor(screenshot, cv.COLOR_BGR2GRAY)
 
         result = cv.matchTemplate(screenshot, template, cv.TM_CCOEFF_NORMED)
-        thresh = 0.85
+        thresh = 0.83
         loc = np.where(result >= thresh)
 
         found = False
@@ -79,7 +79,7 @@ if __name__ == "__main__":
         return found
 
     while True:
-        sleep(1)
+        sleep(.1)
         finished = check_for_finished()
             
         print(f"Finished: {finished}")
