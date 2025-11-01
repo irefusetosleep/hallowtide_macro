@@ -35,6 +35,9 @@ def start_trial():
     infected = False
 
     while True:
+        if is_pressed(stop_key):
+            quit()
+
         if infected == True or time() - start_time > max_time:
             break
 

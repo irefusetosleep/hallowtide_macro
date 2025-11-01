@@ -49,8 +49,9 @@ def check_hunger(): #check alt accounts hunger since it cant regain from carnivo
         sleep(1)
         pd.click()
 
-while True:
-    sleep(1)
-    check_hunger()
+if __name__ == "__main__":
+    while True:
+        sleep(1)
+        check_hunger()
 
 
