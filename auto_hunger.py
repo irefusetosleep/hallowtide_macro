@@ -49,9 +49,41 @@ def check_hunger(): #check alt accounts hunger since it cant regain from carnivo
         sleep(1)
         pd.click()
 
-if __name__ == "__main__":
+
+if __name__ == "__main__":   
+    template = cv.imread("joy.png")
+
+    if template.shape[-1] == 4:
+        template = cv.cvtColor(template, cv.COLOR_BGRA2GRAY)
+    else:
+        template = cv.cvtColor(template, cv.COLOR_BGR2GRAY)
+
+    h, w = template.shape
+
+    pd.PAUSE = 0.001
+
+    def check_for_finished():
+        screenshot = pyautogui.screenshot()
+        screenshot = cv.cvtColor(np.array(screenshot), cv.COLOR_RGB2BGR)
+        screenshot = cv.cvtColor(screenshot, cv.COLOR_BGR2GRAY)
+
+        result = cv.matchTemplate(screenshot, template, cv.TM_CCOEFF_NORMED)
+        thresh = 0.85
+        loc = np.where(result >= thresh)
+
+        found = False
+        for pt in zip(*loc[::-1]):
+            print(f"Found at: {pt}")
+            found = True
+
+        return found
+
     while True:
         sleep(1)
-        check_hunger()
+        finished = check_for_finished()
+            
+        print(f"Finished: {finished}")
+        if finished:
+            check_hunger()
 
 
