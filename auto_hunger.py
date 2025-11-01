@@ -40,13 +40,13 @@ def check_hunger(): #check alt accounts hunger since it cant regain from carnivo
 
     if fill_ratio < 0.3:
         pd.press("1")
-        sleep(.1)
+        sleep(1)
         pd.click()
         sleep(1)
         pd.press("2")
-        sleep(.1)
+        sleep(1)
         pd.press("3")
-        sleep(.1)
+        sleep(1)
         pd.click()
 
 while True:

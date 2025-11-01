@@ -5,6 +5,7 @@ from keyboard import is_pressed
 import cv2 as cv
 import pyautogui
 import numpy as np
+from auto_hunger import check_hunger
 
 template = cv.imread("joy.png")
 
@@ -30,7 +31,7 @@ def start_trial():
     pd.press("e")
         
     start_time = time()
-    max_time = 1 * 60 #the longest the program will wait for the alt to get infected
+    max_time = 1 * 30 #the longest the program will wait for the alt to get infected
     infected = False
 
     while True:
@@ -55,25 +56,32 @@ def start_trial():
             sleep(1)
             infected = True
             pd.click(int(screen_size[0] * .67), int(screen_size[1] * 0.50)) # clicks on the alt account
+            pd.press("shift")
             pd.press("7") #pulls out weapon
             sleep(0.4)
             pd.mouseDown() # starts hold swinging
+            sleep(.4)
             pd.press("esc") # makes hold swing continue out of tab
             sleep(.3)
             pd.mouseUp()
-            sleep(.3)
+            sleep(.2)
             pd.press("esc")
             sleep(.3)
-            pd.keyDown("right")
-            sleep(10)
-            pd.keyUp("right")
+
+            x, y = pd.position()
+            drag_step = 1
+            for i in range(4000):
+                x += drag_step
+                pd.moveTo(x, y)
+
             pd.click()
             sleep(.4)
             pd.press("7") # puts weapon away to cleanly reset for next run
+            pd.press("shift")
             break
 
     sleep(.2)
-    pd.click(int(screen_size[0] * 0.25), int(screen_size[1] * 0.585)) # clicks into main account window
+    pd.click(int(screen_size[0] * 0.23), int(screen_size[1] * 0.565)) # clicks into main account window
 
 def check_for_finished():
     screenshot = pyautogui.screenshot()
@@ -120,45 +128,6 @@ def autoclick(): #autoclicks but also moves the mouse around to account for skip
         if finished:
             break
 
-thirst_bar_color = "#76AFBE"
-thirst_template = cv.imread("Thirst.png")
-thirst_template = cv.cvtColor(thirst_template, cv.COLOR_BGR2GRAY)
-
-thirst_h, thirst_w = thirst_template.shape
-
-def check_hunger(): #check alt accounts hunger since it cant regain from carnivore
-    #yeah im ngl fuck allat image recognition ima just hardcode this
-
-    thirst_bar_height = int((screen_size[1] * 0.199))
-    thirst_bar_width = int((screen_size[0]/2) * 0.006)
-    thirst_bar_region = (screen_size[0] * 0.52, screen_size[1] - thirst_bar_height)
-    screenshot = pyautogui.screenshot(imageFilename="Alt_Screenshot.png", region=(
-        int(thirst_bar_region[0]), #left
-        int(thirst_bar_region[1] * 0.904), #top
-        thirst_bar_width, # width
-        thirst_bar_height)) # height
-
-    frame = cv.cvtColor(np.array(screenshot), cv.COLOR_RGB2BGR)
-
-    lower = np.array([85,30,40])
-    upper = np.array([130,255,255]) #upper and lower blue for pixel counting
-
-    hsv = cv.cvtColor(frame, cv.COLOR_BGR2HSV)
-    mask = cv.inRange(hsv, lower, upper)
-
-    blue_pixels = cv.countNonZero(mask)
-    total = thirst_bar_width * thirst_bar_height
-    fill_ratio = blue_pixels / total
-
-    print(f"Thirst bar about: {fill_ratio * 100:.1f}% full!")
-
-    if fill_ratio < 0.3:
-        pd.click(int(screen_size[0] * .67), int(screen_size[1] * 0.50))
-        pd.press("1")
-        pd.click()
-        sleep(1)
-        pd.press("2")
-        pd.click()
 
 def main():
     global times_ran
