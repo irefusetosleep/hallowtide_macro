@@ -4,12 +4,20 @@ import cv2 as cv
 from screeninfo import get_monitors
 import numpy as np
 from time import sleep
+import os
+
 
 screen_size = (0, 0)
 
 for m in get_monitors():
     if m.is_primary == True: # if you want this to be your second monitor change "True" to "False"
         screen_size = (m.width, m.height)
+
+
+def resource_path(relative_path):
+    base_path = os.path.abspath(".")
+
+    return os.path.join(base_path, relative_path)
 
 def check_hunger(): #check alt accounts hunger since it cant regain from carnivore
     thirst_bar_height = int((screen_size[1] * 0.199))
@@ -51,7 +59,7 @@ def check_hunger(): #check alt accounts hunger since it cant regain from carnivo
 
 
 if __name__ == "__main__":   
-    template = cv.imread("joy.png")
+    template = cv.imread(resource_path("joy.png"))
 
     if template.shape[-1] == 4:
         template = cv.cvtColor(template, cv.COLOR_BGRA2GRAY)
