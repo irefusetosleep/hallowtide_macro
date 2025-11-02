@@ -135,6 +135,26 @@ infected_template = cv.imread(resource_path("curse.png"), cv.IMREAD_GRAYSCALE)
 
 stop_key = "h"
 
+sword = cv.imread(resource_path("sword.png"), cv.IMREAD_GRAYSCALE)
+
+def find_sword():
+    ss = pyautogui.screenshot()
+    ss = cv.cvtColor(np.array(ss), cv.COLOR_RGB2BGR)
+    ss = cv.cvtColor(ss, cv.COLOR_BGR2GRAY)
+
+    result = cv.matchTemplate(ss, sword, cv.TM_CCOEFF_NORMED)
+    thresh = 0.7
+    loc = np.where(result >= thresh)
+
+    sword_found = False
+    for pt in zip(*loc[::-1]):
+        print(f"Sword found {pt}")
+        sword_found = True
+        for i in range(10):
+            pd.click(int(pt[0]), int(pt[1]))
+            pd.click(int(pt[0] + 1), int(pt[1] + 10))
+    return sword_found
+
 def start_trial():
     global macro_running
 
@@ -151,7 +171,7 @@ def start_trial():
 
     x, y = pd.position()
     for i in range(100):
-        y += 1
+        y -= 1
         pd.moveTo(x, y)
 
     while True:
@@ -180,18 +200,21 @@ def start_trial():
             pd.keyDown("o")
             sleep(1)
             pd.keyUp("o")
-            pd.press("shift")
 
-            x, y = pd.position()
-            for i in range(30):
-                y -= 1
-                pd.moveTo(x, y)
 
             sleep(1)
             infected = True
             pd.click(int(screen_size[0] * .67), int(screen_size[1] * 0.50))
             sleep(.3)
-            pd.press("7")
+            sword_found = find_sword()
+            sleep(.1)
+            pd.press("shift")
+
+            if sword_found == False:
+                print("Couldnt find sword")
+                while True:
+                    sleep(1)
+
             sleep(0.4)
             x, y = pd.position()
             drag_step = 1
@@ -201,12 +224,15 @@ def start_trial():
                     toggle_button.config(text="Start", bg="green")
                     return  # exit the function
                 x += drag_step
+                y -= drag_step
                 pd.moveTo(x, y)
                 pd.click()
             
-            sleep(.4)
-            pd.press("7")
             pd.press("shift")
+            sleep(.1)
+            sword_found = find_sword()
+            if not sword_found:
+                print("Couldnt find sword!")
             break
 
     sleep(.2)

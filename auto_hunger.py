@@ -54,7 +54,7 @@ def check_hunger(side="Right"): #check alt accounts hunger since it cant regain 
 
     print(f"Thirst bar about: {fill_ratio * 100:.1f}% full!")
 
-    if fill_ratio < 0.3:
+    if fill_ratio < 0.4:
         if __name__ != "__main__":
             if side=="Right":
                 pd.click(int(screen_size[0] * .67), int(screen_size[1] * 0.50))
@@ -62,11 +62,11 @@ def check_hunger(side="Right"): #check alt accounts hunger since it cant regain 
                 pd.click(int(screen_size[0] * .17), int(screen_size[1] * 0.50))
             sleep(.1)
         
-        for i in range(3):
+        for i in range(1, 3):
             pd.press(str(i))
             sleep(.2)
             pd.click()
-            sleep(.2)
+            sleep(1)
             pd.press(str(i))
             sleep(.1)
 
