@@ -5,7 +5,7 @@ from screeninfo import get_monitors
 import numpy as np
 from time import sleep
 import os
-
+import sys
 
 screen_size = (0, 0)
 
@@ -15,15 +15,26 @@ for m in get_monitors():
 
 
 def resource_path(relative_path):
-    base_path = os.path.abspath(".")
+    """Get absolute path to resource, works for dev and for PyInstaller .exe"""
+    try:
+        # When running as a PyInstaller bundle
+        base_path = sys._MEIPASS
+    except AttributeError:
+        # When running normally
+        base_path = os.path.abspath(".")
 
     return os.path.join(base_path, relative_path)
 
-def check_hunger(): #check alt accounts hunger since it cant regain from carnivore
+
+def check_hunger(side="Right"): #check alt accounts hunger since it cant regain from carnivore
     thirst_bar_height = int((screen_size[1] * 0.199))
     thirst_bar_width = int((screen_size[0]/2) * 0.006)
-    thirst_bar_region = (screen_size[0] * 0.52, screen_size[1] - thirst_bar_height)
-    screenshot = pyautogui.screenshot(imageFilename="Alt_Screenshot.png", region=(
+    thirst_bar_region = (0, 0)
+    if side=="Left":
+        thirst_bar_region = (screen_size[0] * 0.02, screen_size[1] - thirst_bar_height)
+    elif side=="Right":
+        thirst_bar_region = (screen_size[0] * 0.52, screen_size[1] - thirst_bar_height)
+    screenshot = pyautogui.screenshot(region=(
         int(thirst_bar_region[0]), #left
         int(thirst_bar_region[1] * 0.904), #top
         thirst_bar_width, # width
@@ -45,18 +56,19 @@ def check_hunger(): #check alt accounts hunger since it cant regain from carnivo
 
     if fill_ratio < 0.3:
         if __name__ != "__main__":
-            pd.click(int(screen_size[0] * .67), int(screen_size[1] * 0.50))
+            if side=="Right":
+                pd.click(int(screen_size[0] * .67), int(screen_size[1] * 0.50))
+            elif side=="Left":
+                pd.click(int(screen_size[0] * .17), int(screen_size[1] * 0.50))
             sleep(.1)
-        pd.press("1")
-        sleep(1)
-        pd.click()
-        sleep(1)
-        pd.press("2")
-        sleep(1)
-        pd.press("3")
-        sleep(1)
-        pd.click()
-
+        
+        for i in range(3):
+            pd.press(str(i))
+            sleep(.2)
+            pd.click()
+            sleep(.2)
+            pd.press(str(i))
+            sleep(.1)
 
 if __name__ == "__main__":   
     template = cv.imread(resource_path("joy.png"))
@@ -96,5 +108,3 @@ if __name__ == "__main__":
                 pd.click()
                 sleep(0.02)
             check_hunger()
-
-
