@@ -1,5 +1,7 @@
 import subprocess
+import platform
 import sys
+import shutil
 
 def ensure_packages():
     to_ensure = {"pydirectinput", "screeninfo", "keyboard", "opencv-python", "cv2", "pyautogui", "numpy", "Pillow"}
@@ -13,6 +15,42 @@ def ensure_packages():
             subprocess.check_call([sys.executable, "-m", "pip", "install", "--upgrade", package])
 
 ensure_packages()
+
+def check_compiler(compiler_name: str) -> bool:
+    """Check if a compiler is available on PATH."""
+    path = shutil.which(compiler_name)
+    if path:
+        print(f"[OK] Found {compiler_name} at {path}")
+        return True
+    else:
+        print(f"[MISSING] {compiler_name} not found.")
+        return False
+
+def ensure_compilers():
+    system = platform.system().lower()
+
+    gcc_installed = check_compiler("gcc")
+    clang_installed = check_compiler("clang")
+
+    # Windows
+    if system == "windows":
+        if not gcc_installed:
+            print("[INFO] Installing MinGW (GCC)...")
+            os.system("winget install -e --id=GnuWin32.Mingw")
+        if not clang_installed:
+            print("[INFO] Installing LLVM/Clang...")
+            os.system("winget install -e --id=LLVM.LLVM")
+
+    # macOS
+    elif system == "darwin":
+        if not gcc_installed or not clang_installed:
+            print("[INFO] Installing Xcode Command Line Tools...")
+            os.system("xcode-select --install")
+
+    else:
+        print("[WARN] Unsupported OS for auto-install.")
+
+ensure_compilers()
 
 import pydirectinput as pd
 from screeninfo import get_monitors
@@ -143,7 +181,9 @@ def start_trial():
             sleep(0.4)
             x, y = pd.position()
             drag_step = 1
-            for i in range(8000): # spins around to hit any lingering gourdskippers
+            for i in range(3000): # spins around to hit any lingering gourdskippers
+                if is_pressed(stop_key):
+                    quit()
                 x += drag_step
                 pd.moveTo(x, y)
                 pd.click()
@@ -154,7 +194,7 @@ def start_trial():
             break
 
     sleep(.2)
-    pd.click(int(screen_size[0] * 0.23), int(screen_size[1] * 0.565))
+    pd.click(int(screen_size[0] * 0.23), int(screen_size[1] * 0.57))
 
 def check_for_finished():
 
